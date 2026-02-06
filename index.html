@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Solutions | Innovation Meets Excellence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #f5f7fa; color: #2d3748; }
+        .tech-font { font-family: 'Orbitron', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(90deg, #1e3a8a, #10b981, #f59e42);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #1e3a8a, #10b981); transition: width 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+        .feature-panel { transform: translateY(100px); opacity: 0; transition: all 0.6s; }
+        .feature-panel.visible { transform: translateY(0); opacity: 1; }
+        .hero-section { height: 100vh; position: relative; }
+        .particle-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div id="vanta-bg" class="particle-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white bg-opacity-90 backdrop-blur-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between h-20 items-center">
+            <span class="text-2xl font-bold gradient-text tech-font">ENGINEERING SOLUTIONS</span>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Home</a>
+                <a href="#competencies" class="nav-link px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-600">Expertise</a>
+                <a href="#projects" class="nav-link px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Projects</a>
+                <a href="#contact" class="nav-link px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section flex items-center justify-center relative overflow-hidden px-4 pt-20">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="text-center lg:text-left">
+                <span class="relative inline-block mb-6 px-4 py-2 bg-white rounded-lg text-sm font-medium text-gray-800 tech-font shadow">
+                    INNOVATION FOR TOMORROW'S CHALLENGES
+                </span>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight tech-font gradient-text">
+                    Engineering Excellence Across Industries
+                </h1>
+                <p class="text-xl text-gray-600 max-w-2xl mb-10">
+                    Delivering cutting-edge solutions for structural analysis, robotics, sustainable design, and more—empowering the future of engineering.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#projects" class="px-8 py-4 rounded-full font-medium text-lg bg-gradient-to-r from-blue-600 to-green-400 hover:from-blue-700 hover:to-green-500 text-white shadow transition-all duration-300 transform hover:scale-105">
+                        <span class="relative z-10">Explore Projects</span>
+                    </a>
+                    <a href="#contact" class="px-8 py-4 rounded-full font-medium text-lg border-2 border-green-400 text-green-600 hover:text-white hover:bg-green-500 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-envelope mr-2"></i>Contact Us
+                    </a>
+                </div>
+            </div>
+            <!-- 3D Model -->
+            <div class="relative flex items-center justify-center h-96 lg:h-auto">
+                <div class="absolute w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+                    <canvas id="torusCanvas" class="h-full w-full"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Competencies -->
+    <section id="competencies" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl md:text-5xl font-bold mb-10 text-center gradient-text tech-font">
+                Our Core Competencies
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="feature-panel bg-gray-50 p-8 rounded-xl shadow hover:shadow-lg">
+                    <div class="text-blue-600 mb-4"><i class="fas fa-cube text-4xl"></i></div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Structural Analysis</h3>
+                    <p class="text-gray-600">Marine, aerospace, and industrial FEA—ensuring safety, efficiency, and performance.</p>
+                </div>
+                <div class="feature-panel bg-gray-50 p-8 rounded-xl shadow hover:shadow-lg delay-100">
+                    <div class="text-green-600 mb-4"><i class="fas fa-leaf text-4xl"></i></div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Sustainable Design</h3>
+                    <p class="text-gray-600">Eco-conscious engineering for a cleaner, greener tomorrow.</p>
+                </div>
+                <div class="feature-panel bg-gray-50 p-8 rounded-xl shadow hover:shadow-lg delay-200">
+                    <div class="text-orange-600 mb-4"><i class="fas fa-robot text-4xl"></i></div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Robotic Automation</h3>
+                    <p class="text-gray-600">Innovative robotic systems for manufacturing, agriculture, and beyond.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collaborators -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Our Esteemed Collaborators</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="flex items-center justify-center p-4">
+                    <span class="text-2xl font-bold text-blue-800">DRDO, INDIA</span>
+                </div>
+                <div class="flex items-center justify-center p-4">
+                    <span class="text-2xl font-bold text-blue-600">CUSAT</span>
+                </div>
+                <div class="flex items-center justify-center p-4">
+                    <span class="text-2xl font-bold text-green-700">Hamon Cooling</span>
+                </div>
+                <div class="flex items-center justify-center p-4">
+                    <span class="text-2xl font-bold text-purple-700">Kerala Finance Ltd</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center gradient-text mb-10 tech-font">Highlighted Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="text-blue-500 text-3xl mr-3"><i class="fas fa-water"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Marine</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Sonar Sensor Structural Analysis (DRDO)</h3>
+                    <p class="text-gray-600">Structural stability optimization for sonar sensors in submarines (with CUSAT & DRDO).</p>
+                </div>
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8 delay-100">
+                    <div class="flex items-center mb-4">
+                        <div class="text-green-500 text-3xl mr-3"><i class="fas fa-fan"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Mechanical</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Novel Fan Hub Design</h3>
+                    <p class="text-gray-600">Efficiency-improved fan hub for Hamon Cooling—vibration reduction and robust design.</p>
+                </div>
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8 delay-200">
+                    <div class="flex items-center mb-4">
+                        <div class="text-purple-500 text-3xl mr-3"><i class="fas fa-robot"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Robotics</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">SCARA Robot Efficiency</h3>
+                    <p class="text-gray-600">Designed SCARA robot for industrial end-effector optimization—boosting precision.</p>
+                </div>
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="text-orange-500 text-3xl mr-3"><i class="fas fa-sun"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Thermal</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Solar-Assisted Food Dryer</h3>
+                    <p class="text-gray-600">Developed hybrid food drying system with solar/vapor compression tech for sustainability.</p>
+                </div>
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="text-red-500 text-3xl mr-3"><i class="fas fa-fire-extinguisher"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Civil</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Fire Resistance Analysis</h3>
+                    <p class="text-gray-600">Fire safety optimization for concrete structures—improving building resilience.</p>
+                </div>
+                <div class="feature-panel bg-white rounded-xl shadow-md p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="text-indigo-500 text-3xl mr-3"><i class="fas fa-plane"></i></div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">Aerospace</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lightweight Airplane Wing</h3>
+                    <p class="text-gray-600">Composite-based wing for reduced weight with high integrity (aerospace research).</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold gradient-text text-center mb-12 tech-font">Get In Touch</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white rounded-3xl p-8 shadow-xl">
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-600 mb-2">Name</label>
+                            <input type="text" id="name" class="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent" placeholder="Your name">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-600 mb-2">Email</label>
+                            <input type="email" id="email" class="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-600 mb-2">Message</label>
+                            <textarea id="message" rows="4" class="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent" placeholder="How can we help you?"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-green-400 hover:from-blue-700 hover:to-green-500 text-white px-8 py-4 rounded-xl font-medium text-lg transition-all duration-300 transform hover:scale-105">
+                            Send Message
+                        </button>
+                    </form>
+                    <div class="mt-8 space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-blue-400 mr-4 text-xl"></i>
+                            <span>contact@engineeringsolutions.com</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone-alt text-blue-400 mr-4 text-xl"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-green-400 mr-4 text-xl"></i>
+                            <span>Kochi, Kerala, India</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative h-96 w-full rounded-3xl overflow-hidden shadow-md">
+                    <canvas id="contactCanvas" class="h-full w-full bg-gray-100"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-200 bg-white">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fas fa-cogs text-blue-600 text-2xl mr-2"></i>
+                <span class="text-lg font-medium text-gray-800">Engineering Solutions</span>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-blue-600"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-gray-400 hover:text-blue-600"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-400 hover:text-blue-600"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="text-gray-400 hover:text-blue-600"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+            © 2024 Engineering Solutions. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Animated Vanta Globe background
+        VANTA.GLOBE({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            color: 0x10b981,
+            backgroundColor: 0xf5f7fa,
+            size: 0.8
+        });
+
+        // Animate feature panels on scroll
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.feature-panel').forEach(panel => observer.observe(panel));
+
+        // 3D Torus (Hero Section)
+        document.addEventListener('DOMContentLoaded', function () {
+            const torusCanvas = document.getElementById('torusCanvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: torusCanvas, alpha: true, antialias: true });
+            const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+            const material = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.8 });
+            const torus = new THREE.Mesh(geometry, material);
+            scene.add(torus);
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                torus.rotation.x += 0.01;
+                torus.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize torus canvas
+            function resizeTorus() {
+                const parent = torusCanvas.parentElement;
+                const width = parent.offsetWidth;
+                const height = parent.offsetHeight;
+                torusCanvas.width = width;
+                torusCanvas.height = height;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }
+            window.addEventListener('resize', resizeTorus);
+            resizeTorus();
+        });
+
+        // 3D Contact Animation (optional for style)
+        document.addEventListener('DOMContentLoaded', function () {
+            const contactCanvas = document.getElementById('contactCanvas');
+            if (!contactCanvas) return;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: contactCanvas, alpha: true, antialias: true });
+            for (let i = 0; i < 5; i++) {
+                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ color: [0x007bff, 0x10b981, 0xf59e42, 0x6b46c1, 0xe53e3e][i], transparent: true, opacity: 0.8 });
+                const orb = new THREE.Mesh(geometry, material);
+                orb.position.x = (Math.random() - 0.5) * 4;
+                orb.position.y = (Math.random() - 0.5) * 2;
+                orb.position.z = (Math.random() - 0.5) * 4;
+                scene.add(orb);
+            }
+            camera.position.z = 8;
+            function animate() {
+                requestAnimationFrame(animate);
+                scene.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            function resizeContact() {
+                const parent = contactCanvas.parentElement;
+                const width = parent.offsetWidth;
+                const height = parent.offsetHeight;
+                contactCanvas.width = width;
+                contactCanvas.height = height;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }
+            window.addEventListener('resize', resizeContact);
+            resizeContact();
+        });
+    </script>
+</body>
+</html>
