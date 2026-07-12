@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Introduction to Abaqus &amp; FEA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E2340;
+    --ink-2:#123059;
+    --paper:#F6F3EA;
+    --paper-2:#EDE8D9;
+    --steel:#3E4A5C;
+    --steel-soft:#7186A0;
+    --line:#6E93B8;
+    --c-blue:#2E6F95;
+    --c-green:#4CA771;
+    --c-yellow:#E8C547;
+    --c-red:#D6534C;
+    --sheet-w: min(880px, 92vw);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Serif', serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--c-yellow); color:var(--ink); }
+
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(110,147,184,0.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110,147,184,0.14) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.06em; }
+  h1,h2,h3,.display{ font-family:'Space Grotesk', sans-serif; }
+
+  a{ color: var(--c-yellow); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding: 64px 0 40px;
+    overflow:hidden;
+  }
+  .hero-inner{
+    width:var(--sheet-w);
+    margin:0 auto;
+    position:relative;
+    z-index:2;
+  }
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    text-transform:uppercase;
+    color: var(--steel-soft);
+    border:1px solid rgba(255,255,255,0.18);
+    padding:6px 12px;
+    border-radius:2px;
+  }
+  .tag .dot{ width:6px;height:6px; background:var(--c-yellow); }
+  h1.title{
+    font-size: clamp(34px, 6vw, 58px);
+    line-height:1.05;
+    font-weight:700;
+    margin: 22px 0 10px;
+    color: #fff;
+  }
+  h1.title em{
+    font-style:normal;
+    background:linear-gradient(90deg, var(--c-blue), var(--c-green) 40%, var(--c-yellow) 70%, var(--c-red));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .lede{
+    font-size:18px;
+    max-width:60ch;
+    color:#D9E2EC;
+  }
+
+  /* hero diagram */
+  .rig{
+    margin-top:34px;
+    border:1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.03);
+    padding: 18px 18px 10px;
+  }
+  .rig-head{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11px; color:var(--steel-soft); margin-bottom:8px;
+  }
+  .rig-stage-label{ color:#EDE8D9; }
+  svg{ display:block; width:100%; height:auto; }
+  .rig-btns{
+    display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;
+  }
+  .rig-btns button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.25);
+    color:#D9E2EC;
+    padding:7px 12px;
+    cursor:pointer;
+    border-radius:2px;
+    transition: all .15s ease;
+  }
+  .rig-btns button:hover{ border-color:var(--c-yellow); color:#fff; }
+  .rig-btns button.active{ background:var(--c-yellow); color:var(--ink); border-color:var(--c-yellow); font-weight:600;}
+  .rig-btns button:focus-visible{ outline:2px solid var(--c-yellow); outline-offset:2px; }
+  .rig-caption{ font-size:13px; color:var(--steel-soft); margin-top:10px;}
+
+  /* ---------- SHEETS ---------- */
+  .sheet{
+    background: var(--paper);
+    color: var(--steel);
+    position:relative;
+  }
+  .sheet-inner{
+    width:var(--sheet-w);
+    margin:0 auto;
+    padding: 56px 0;
+  }
+  .sheet + .sheet .sheet-inner{ border-top:1px dashed rgba(62,74,92,0.3); }
+
+  .sheet-tag{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:11px; color: var(--steel-soft); margin-bottom:18px;
+  }
+  .sheet-tag .no{ color:var(--c-blue); font-weight:600; }
+
+  h2.h{
+    font-size: clamp(24px, 3.4vw, 32px);
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .h-accent{
+    display:inline-block; width:34px; height:3px; background:var(--c-red);
+    margin-bottom:14px;
+  }
+
+  p{ margin:0 0 14px; max-width:66ch; }
+  .lead-line{ font-size:17px; color:var(--ink-2); }
+
+  /* mesh-marker lists */
+  ul.mesh-list{ list-style:none; margin:18px 0; padding:0; }
+  ul.mesh-list li{
+    position:relative;
+    padding-left:30px;
+    margin-bottom:14px;
+    max-width:64ch;
+  }
+  ul.mesh-list li::before{
+    content:"";
+    position:absolute;
+    left:0; top:7px;
+    width:12px; height:12px;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background: var(--tri-color, var(--c-blue));
+  }
+  ul.mesh-list li strong{ color:var(--ink); }
+
+  .two-col{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width:640px){ .two-col{ grid-template-columns:1fr; } }
+
+  .panel{
+    border:1px solid rgba(62,74,92,0.22);
+    padding:18px 20px;
+    background: rgba(255,255,255,0.4);
+  }
+  .panel h3{ margin:0 0 8px; font-size:15px; color:var(--ink); }
+  .panel .mono{ font-size:11px; color:var(--steel-soft); display:block; margin-bottom:8px;}
+
+  /* process steps */
+  .steps{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:2px;
+    margin: 26px 0 8px;
+    background: rgba(62,74,92,0.2);
+  }
+  @media (max-width:760px){ .steps{ grid-template-columns: 1fr 1fr; } }
+  .step{
+    background: var(--paper);
+    padding:18px 14px 20px;
+    position:relative;
+    transition: background .2s ease;
+  }
+  .step:hover{ background: var(--paper-2); }
+  .step .sht{ font-size:10px; color:var(--steel-soft); }
+  .step .num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px; font-weight:700;
+    color: var(--step-color, var(--c-blue));
+    margin: 6px 0 8px;
+  }
+  .step h4{ margin:0 0 6px; font-size:14px; color:var(--ink); }
+  .step p{ font-size:13px; margin:0; max-width:none; color:var(--steel); }
+
+  /* contour swatch strip */
+  .contour-bar{
+    height:14px;
+    width:100%;
+    margin: 8px 0 20px;
+    background: linear-gradient(90deg, var(--c-blue), var(--c-green) 33%, var(--c-yellow) 66%, var(--c-red));
+    position:relative;
+  }
+  .contour-labels{
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--steel-soft);
+  }
+
+  .app-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:14px;
+    margin-top:20px;
+  }
+  @media (max-width:640px){ .app-grid{ grid-template-columns:1fr 1fr; } }
+  .app{
+    border:1px solid rgba(62,74,92,0.25);
+    padding:14px;
+    font-size:13px;
+    color:var(--ink-2);
+  }
+  .app .mono{ font-size:10px; color:var(--steel-soft); display:block; margin-bottom:6px; }
+
+  /* takeaway callout */
+  .callout{
+    border: 2px dashed var(--c-red);
+    padding: 22px 24px;
+    margin-top:26px;
+    background: rgba(214,83,76,0.05);
+    position:relative;
+  }
+  .callout .mono{ position:absolute; top:-11px; left:16px; background:var(--paper); padding:0 8px; font-size:11px; color:var(--c-red);}
+  .callout h3{ margin-top:6px; color:var(--ink); font-size:16px;}
+  .flow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color: var(--ink-2);
+    background:#fff;
+    border:1px solid rgba(62,74,92,0.2);
+    padding:14px;
+    margin-top:12px;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  footer{
+    text-align:center;
+    padding: 40px 0 60px;
+    color: var(--steel-soft);
+    font-size:12px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero grid-bg">
+  <div class="hero-inner">
+    <span class="tag"><span class="dot"></span>LECTURE NOTES &middot; SHEET 00 OF 06</span>
+    <h1 class="title">Before it's built,<br>break it <em>on screen</em>.</h1>
+    <p class="lede">Every bracket, bolt, and beam has a breaking point. Finite Element Analysis is how engineers find it before it costs anything &mdash; and Abaqus is one of the sharpest tools for doing it. Here's how the whole pipeline actually works, one stage at a time.</p>
+
+    <div class="rig">
+      <div class="rig-head">
+        <span class="mono">FIG. 1 &mdash; THE SAME BRACKET, THREE STAGES</span>
+        <span class="mono rig-stage-label" id="stageLabel">01 / SOLID</span>
+      </div>
+      <div id="svgHolder"></div>
+      <div class="rig-btns">
+        <button class="active" data-stage="0">01 Solid shape</button>
+        <button data-stage="1">02 Meshed</button>
+        <button data-stage="2">03 Solved &amp; contoured</button>
+      </div>
+      <p class="rig-caption" id="rigCaption">A continuous part has infinite points to solve for &mdash; far too many equations. FEA needs to cut it down to a finite number first.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sheet">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>ABAQUS &mdash; WHAT IT IS</span><span class="no">SHT. 01/06</span></div>
+    <h2 class="h">Meet the software</h2>
+    <span class="h-accent"></span>
+    <p class="lead-line">Abaqus is a simulation suite built for exactly this job: predicting how real structures behave under real loads, without building a single prototype.</p>
+    <div class="two-col">
+      <div class="panel">
+        <span class="mono">STRENGTH</span>
+        <h3>It agrees with reality</h3>
+        <p>A deep library of plasticity and nonlinear material models means its output tends to land close to expected standard values &mdash; not just plausible-looking numbers.</p>
+      </div>
+      <div class="panel">
+        <span class="mono">CHALLENGE</span>
+        <h3>It doesn't look friendly</h3>
+        <p>The interface is dense and the learning curve is real. That's the entire reason this course exists: to make the powerful part accessible without the intimidation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" style="background:var(--paper-2);">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>THE CORE IDEA</span><span class="no">SHT. 02/06</span></div>
+    <h2 class="h">What is FEA, really?</h2>
+    <span class="h-accent"></span>
+    <p class="lead-line">Finite Element Analysis is a numerical technique for solving the partial differential equations that govern how physical things behave &mdash; when there's no clean formula that will do it for you.</p>
+    <p>Most real parts aren't simple beams or perfect circles. The moment geometry gets complicated, an exact analytical solution stops existing, and you're forced into <strong style="color:var(--ink);">approximate numerical methods</strong> instead.</p>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Other methods exist&hellip;</h3>
+        <p style="margin-bottom:0;">Finite Difference Method (FDM) and Finite Volume Method (FVM) both solve the same kind of problem from a different angle.</p>
+      </div>
+      <div class="panel">
+        <h3>&hellip;but FEA wins for structures</h3>
+        <p style="margin-bottom:0;">Its flexibility with complex boundaries and irregular domains is exactly what structural analysis needs, which is why it's the industry default.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>HOW FEA WORKS</span><span class="no">SHT. 03/06</span></div>
+    <h2 class="h">Three words worth knowing first</h2>
+    <span class="h-accent"></span>
+    <ul class="mesh-list">
+      <li style="--tri-color:var(--c-blue);"><strong>Elements</strong> &mdash; the small, simple geometric pieces a complex structure gets divided into.</li>
+      <li style="--tri-color:var(--c-green);"><strong>Nodes</strong> &mdash; the points that stitch neighbouring elements back together.</li>
+      <li style="--tri-color:var(--c-yellow);"><strong>Discretization (meshing)</strong> &mdash; the act of cutting a continuous shape into that finite set of elements and nodes in the first place.</li>
+    </ul>
+
+    <p class="lead-line" style="margin-top:26px;">From there, the same five stages run every single time:</p>
+
+    <div class="steps">
+      <div class="step" style="--step-color:var(--c-blue);">
+        <span class="sht mono">STAGE</span>
+        <div class="num">01</div>
+        <h4>Mesh it</h4>
+        <p>Divide the object into a finite number of elements and nodes.</p>
+      </div>
+      <div class="step" style="--step-color:#3E86A0;">
+        <span class="sht mono">STAGE</span>
+        <div class="num">02</div>
+        <h4>Assign it</h4>
+        <p>Give each element equations from solid mechanics and real material properties.</p>
+      </div>
+      <div class="step" style="--step-color:var(--c-green);">
+        <span class="sht mono">STAGE</span>
+        <div class="num">03</div>
+        <h4>Assemble it</h4>
+        <p>Every element gets a Local Stiffness Matrix; all of them combine into one Global Matrix.</p>
+      </div>
+      <div class="step" style="--step-color:var(--c-yellow);">
+        <span class="sht mono">STAGE</span>
+        <div class="num">04</div>
+        <h4>Solve it</h4>
+        <p>The global matrix is solved simultaneously for every unknown nodal displacement.</p>
+      </div>
+      <div class="step" style="--step-color:var(--c-red);">
+        <span class="sht mono">STAGE</span>
+        <div class="num">05</div>
+        <h4>Read it</h4>
+        <p>Results come back as strain, stress, and deformation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" style="background:var(--paper-2);">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>READING THE OUTPUT</span><span class="no">SHT. 04/06</span></div>
+    <h2 class="h">Colour is the whole point</h2>
+    <span class="h-accent"></span>
+    <p class="lead-line">Instead of a handful of measurement points, FEA gives a smooth reading across the entire part &mdash; and contour plots are how that gets seen.</p>
+    <div class="contour-bar"></div>
+    <div class="contour-labels">
+      <span class="mono">0 MPa &mdash; LOW STRESS</span>
+      <span class="mono">250 MPa &mdash; MAXIMUM (RED)</span>
+    </div>
+    <p>By convention, red marks the highest-stress zones &mdash; the places most likely to fail first. That's the advantage over conventional design: rather than guessing between a few discrete data points, you can see precisely where trouble concentrates.</p>
+  </div>
+</section>
+
+<section class="sheet">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>WHERE THIS GETS USED</span><span class="no">SHT. 05/06</span></div>
+    <h2 class="h">Not just stress</h2>
+    <span class="h-accent"></span>
+    <p class="lead-line">Once a part is meshed, almost any physical question can be asked of it.</p>
+    <div class="app-grid">
+      <div class="app"><span class="mono">01</span>Forces &amp; pressure</div>
+      <div class="app"><span class="mono">02</span>Thermal distribution</div>
+      <div class="app"><span class="mono">03</span>Stress &amp; strain</div>
+      <div class="app"><span class="mono">04</span>Deformation &amp; failure</div>
+      <div class="app"><span class="mono">05</span>Bolt size &amp; torque optimization</div>
+      <div class="app"><span class="mono">06</span>Design optimization</div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" style="background:var(--paper-2);">
+  <div class="sheet-inner">
+    <div class="sheet-tag"><span>BEFORE YOU MOVE ON</span><span class="no">SHT. 06/06</span></div>
+    <div class="callout">
+      <span class="mono">KEY TAKEAWAYS</span>
+      <h3>Three things worth remembering</h3>
+      <p><strong style="color:var(--ink);">Element size is a trade-off.</strong> Smaller elements sharpen accuracy but raise computational cost &mdash; there's no free lunch.</p>
+      <p><strong style="color:var(--ink);">Element type matters.</strong> Isoparametric, structured, or unstructured elements each suit different problems.</p>
+      <p style="margin-bottom:0;"><strong style="color:var(--ink);">The big picture, in one line:</strong></p>
+      <div class="flow">Complex Shape &rarr; Discretization &rarr; Local Matrices &rarr; Global Matrix &rarr; Solution &rarr; Visual Results</div>
+    </div>
+  </div>
+</section>
+
+<footer class="grid-bg" style="background:var(--ink);">
+  Introduction to Abaqus &amp; Finite Element Analysis &mdash; Lecture Notes
+</footer>
+
+<script>
+(function(){
+  const holder = document.getElementById('svgHolder');
+  const label = document.getElementById('stageLabel');
+  const caption = document.getElementById('rigCaption');
+  const buttons = document.querySelectorAll('.rig-btns button');
+
+  const captions = [
+    "A continuous part has infinite points to solve for — far too many equations. FEA needs to cut it down to a finite number first.",
+    "Discretization: the shape is divided into simple elements joined at nodes. Now every element gets its own local stiffness equation.",
+    "The local equations are assembled into a global matrix and solved. The result is mapped back onto the shape as a stress contour — red marks where it's most likely to fail."
+  ];
+  const labels = ["01 / SOLID", "02 / MESHED", "03 / SOLVED"];
+
+  // simple bracket outline (an L-shaped bracket, like the lecture's own example)
+  const bracketPath = "M40,40 L140,40 L140,90 L230,90 L230,190 L40,190 Z";
+
+  function solidSVG(){
+    return `<svg viewBox="0 0 320 220" role="img" aria-label="Solid bracket shape">
+      <path d="${bracketPath}" fill="#DDE3EA" stroke="#3E4A5C" stroke-width="2"/>
+      <circle cx="70" cy="150" r="6" fill="#3E4A5C"/>
+      <circle cx="70" cy="70" r="6" fill="#3E4A5C"/>
+    </svg>`;
+  }
+
+  function meshSVG(){
+    // build a rough triangular mesh over the bracket region
+    let lines = '';
+    const stepX = 22, stepY = 22;
+    for(let x=40; x<=230; x+=stepX){
+      for(let y=40; y<=190; y+=stepY){
+        // skip points outside the L shape roughly
+        if(x>140 && y<90) continue;
+        lines += `<circle cx="${x}" cy="${y}" r="2.4" fill="#2E6F95"/>`;
+        if(x+stepX<=230){
+          if(!(x+stepX>140 && y<90) )
+            lines += `<line x1="${x}" y1="${y}" x2="${x+stepX}" y2="${y}" stroke="#6E93B8" stroke-width="1"/>`;
+        }
+        if(y+stepY<=190){
+          if(!(x>140 && y+stepY<90))
+            lines += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y+stepY}" stroke="#6E93B8" stroke-width="1"/>`;
+        }
+        if(x+stepX<=230 && y+stepY<=190){
+          if(!(x+stepX>140 && y+stepY<=90))
+            lines += `<line x1="${x}" y1="${y}" x2="${x+stepX}" y2="${y+stepY}" stroke="#6E93B8" stroke-width="0.7"/>`;
+        }
+      }
+    }
+    return `<svg viewBox="0 0 320 220" role="img" aria-label="Meshed bracket shape">
+      <path d="${bracketPath}" fill="#F6F3EA" stroke="#3E4A5C" stroke-width="2"/>
+      ${lines}
+    </svg>`;
+  }
+
+  function contourSVG(){
+    return `<svg viewBox="0 0 320 220" role="img" aria-label="Solved bracket with stress contour">
+      <defs>
+        <linearGradient id="stressGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2E6F95"/>
+          <stop offset="45%" stop-color="#4CA771"/>
+          <stop offset="75%" stop-color="#E8C547"/>
+          <stop offset="100%" stop-color="#D6534C"/>
+        </linearGradient>
+        <clipPath id="bracketClip"><path d="${bracketPath}"/></clipPath>
+      </defs>
+      <g clip-path="url(#bracketClip)">
+        <rect x="0" y="0" width="320" height="220" fill="url(#stressGrad)"/>
+      </g>
+      <path d="${bracketPath}" fill="none" stroke="#3E4A5C" stroke-width="2"/>
+      <circle cx="70" cy="70" r="5" fill="#0E2340"/>
+      <text x="82" y="74" font-family="IBM Plex Mono, monospace" font-size="10" fill="#3E4A5C">fixed</text>
+      <circle cx="70" cy="150" r="5" fill="#D6534C"/>
+      <text x="82" y="154" font-family="IBM Plex Mono, monospace" font-size="10" fill="#3E4A5C">max stress</text>
+    </svg>`;
+  }
+
+  const renders = [solidSVG, meshSVG, contourSVG];
+
+  function setStage(i){
+    holder.innerHTML = renders[i]();
+    label.textContent = labels[i];
+    caption.textContent = captions[i];
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.stage == i));
+  }
+
+  buttons.forEach(b => b.addEventListener('click', () => setStage(parseInt(b.dataset.stage))));
+  setStage(0);
+})();
+</script>
+
+</body>
+</html>
