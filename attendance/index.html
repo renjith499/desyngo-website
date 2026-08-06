@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Employee Attendance | Desyngo</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#152033;background:#f4f7fb}*{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#dcecff 0,#f4f7fb 45%)}
+    main{width:min(560px,100%)}.card{background:#fff;border:1px solid #dce3ed;border-radius:18px;padding:28px;box-shadow:0 18px 55px #16345b18}
+    h1{margin:0 0 6px;font-size:1.65rem}.muted{color:#627087}.stack{display:grid;gap:14px}.hidden{display:none!important}
+    label{display:grid;gap:6px;font-weight:650;font-size:.9rem}input{width:100%;padding:12px 14px;border:1px solid #bfc9d8;border-radius:10px;font:inherit}
+    input:focus{outline:3px solid #2176ff2b;border-color:#2176ff}button{border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.55;cursor:wait}.primary{background:#155eef;color:#fff}.secondary{background:#eaf1ff;color:#164a9b}.danger{background:#fff0f0;color:#9e2424}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.message{padding:11px 13px;border-radius:9px;background:#eef4ff;color:#244d89;font-size:.9rem}
+    .message.error{background:#fff0f0;color:#9e2424}.top{display:flex;justify-content:space-between;gap:14px;align-items:start}.history{margin-top:18px;border-top:1px solid #e4e9f0;padding-top:14px}
+    .record{padding:12px 0;border-bottom:1px solid #edf0f4;display:flex;justify-content:space-between;gap:12px}.record strong{display:block}.record span{color:#627087;font-size:.85rem}
+    small{display:block;color:#7b8798;margin-top:16px;line-height:1.45}@media(max-width:460px){.actions{grid-template-columns:1fr}.card{padding:21px}}
+  </style>
+</head>
+<body>
+<main>
+  <section id="login-card" class="card stack">
+    <div><h1>Employee attendance</h1><p class="muted">Sign in with your Desyngo employee account.</p></div>
+    <form id="login-form" class="stack">
+      <label>Username or email<input id="identifier" autocomplete="username" required maxlength="255"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+      <button class="primary" type="submit">Sign in</button>
+    </form>
+    <div id="login-message" class="message hidden" role="alert"></div>
+  </section>
+
+  <section id="attendance-card" class="card stack hidden">
+    <div class="top"><div><h1 id="welcome">Attendance</h1><p id="today" class="muted"></p></div><button id="logout" class="danger">Sign out</button></div>
+    <div id="status-message" class="message">Location permission is requested only when you check in or check out.</div>
+    <div class="actions"><button id="check-in" class="primary">Check in</button><button id="check-out" class="secondary">Check out</button></div>
+    <div class="history"><strong>Recent attendance</strong><div id="history"></div></div>
+    <small>Attendance entries cannot be edited or deleted here. Contact your administrator if a correction is required.</small>
+  </section>
+</main>
+<script>
+  const API='https://cooling-tower-api.onrender.com';
+  let token=sessionStorage.getItem('desyngo_employee_session');
+  const $=id=>document.getElementById(id);
+  function message(id,text,error=false){const el=$(id);el.textContent=text;el.classList.remove('hidden');el.classList.toggle('error',error)}
+  async function request(path,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};if(token)headers.Authorization=`Bearer ${token}`;const res=await fetch(API+path,{...options,headers});let body={};try{body=await res.json()}catch{}if(!res.ok)throw new Error(typeof body.detail==='string'?body.detail:'Request failed.');return body}
+  function showLogin(){token=null;sessionStorage.removeItem('desyngo_employee_session');$('attendance-card').classList.add('hidden');$('login-card').classList.remove('hidden')}
+  async function load(){if(!token)return showLogin();try{const me=await request('/api/auth/me');if(!me.is_employee)throw new Error('This account does not have employee attendance access.');$('welcome').textContent=`Welcome, ${me.full_name}`;$('today').textContent=new Intl.DateTimeFormat('en-IN',{dateStyle:'full',timeZone:'Asia/Kolkata'}).format(new Date());$('login-card').classList.add('hidden');$('attendance-card').classList.remove('hidden');await history()}catch(e){showLogin();message('login-message',e.message,true)}}
+  function safe(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  async function history(){const rows=await request('/api/attendance/me');$('history').innerHTML=rows.length?rows.slice(0,14).map(r=>`<div class="record"><div><strong>${safe(r.work_date)}</strong><span>${safe(r.status)}</span></div><div><span>In: ${safe(time(r.check_in_at))}</span><br><span>Out: ${safe(time(r.check_out_at))}</span></div></div>`).join(''):'<p class="muted">No attendance recorded.</p>'}
+  function time(value){return value?new Intl.DateTimeFormat('en-IN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'}).format(new Date(value)):'—'}
+  function location(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('Location is not supported on this device.'));navigator.geolocation.getCurrentPosition(p=>resolve({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy_m:p.coords.accuracy}),e=>reject(new Error(e.code===1?'Location permission is required.':'Unable to obtain an accurate location.')),{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
+  async function mark(kind,button){button.disabled=true;message('status-message','Verifying your current location…');try{const loc=await location();const row=await request(`/api/attendance/${kind}`,{method:'POST',body:JSON.stringify(loc)});message('status-message',kind==='check-in'?`Checked in successfully at ${time(row.check_in_at)}.`:`Checked out successfully at ${time(row.check_out_at)}.`);await history()}catch(e){message('status-message',e.message,true)}finally{button.disabled=false}}
+  $('login-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.currentTarget.querySelector('button');button.disabled=true;try{const data=await request('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('identifier').value.trim(),password:$('password').value})});token=data.access_token;sessionStorage.setItem('desyngo_employee_session',token);$('password').value='';await load()}catch(err){message('login-message',err.message,true)}finally{button.disabled=false}});
+  $('check-in').addEventListener('click',()=>mark('check-in',$('check-in')));$('check-out').addEventListener('click',()=>mark('check-out',$('check-out')));$('logout').addEventListener('click',showLogin);load();
+</script>
+</body>
+</html>
